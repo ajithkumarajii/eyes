@@ -23,8 +23,10 @@ def set_angle(pwm, angle):
 
 # Pygame Setup
 pygame.init()
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+# 3.5-inch Pi display resolution
+WIDTH, HEIGHT = 480, 320
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("Cute Eyes + Servo")
 
 BLACK = (0, 0, 0)
@@ -32,10 +34,12 @@ BLUE = (0, 170, 255)
 DARK_BLUE = (0, 120, 200)
 PINK = (255, 100, 150)
 
-eye_left = [280, 300]
-eye_right = [520, 300]
-eye_size = 100
-movement_range = 30
+# Dynamically centered eye positions
+eye_left = [WIDTH // 3, HEIGHT // 2]
+eye_right = [2 * WIDTH // 3, HEIGHT // 2]
+
+eye_size = WIDTH // 6
+movement_range = WIDTH // 16  # Movement scaling
 
 last_blink = time.time()
 blink_duration = 0.1
@@ -58,10 +62,10 @@ while running:
         target_eyeX = np.interp(fx, [100, 540], [movement_range, -movement_range])
         target_eyeY = np.interp(fy, [50, 430], [movement_range, -movement_range])
 
-        eye_left[0] = 280 + target_eyeX
-        eye_left[1] = 300 + target_eyeY
-        eye_right[0] = 520 + target_eyeX
-        eye_right[1] = 300 + target_eyeY
+        eye_left[0] = WIDTH // 3 + target_eyeX
+        eye_left[1] = HEIGHT // 2 + target_eyeY
+        eye_right[0] = 2 * WIDTH // 3 + target_eyeX
+        eye_right[1] = HEIGHT // 2 + target_eyeY
 
         # Servo control
         angle1 = int(np.interp(fx, [100, 540], [0, 180]))
@@ -69,10 +73,9 @@ while running:
 
         print(f"Servo 1 (X-Axis) Angle: {angle1}°, Servo 2 (Y-Axis) Angle: {angle2}°")
 
-    '''set_angle(pwm1, angle1)
-    set_angle(pwm2, angle2)'''
-
-        
+        # Uncomment to control servos
+        # set_angle(pwm1, angle1)
+        # set_angle(pwm2, angle2)
 
     # Blinking logic
     current_time = time.time()
@@ -104,7 +107,6 @@ while running:
             running = False
 
 # Cleanup
-
 pwm1.stop()
 pwm2.stop()
 GPIO.cleanup()
